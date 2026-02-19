@@ -1,35 +1,30 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { TaskDto, CreateTaskDto, UpdateTaskDto } from '../dto/task.dto';
+import { CreateTaskDto } from '../dto/task.dto';
 
-@Controller('task')
+@Controller('api/task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(public readonly taskSvc: TaskService) {}
 
   @Get()
-  findAll(): TaskDto[] {
-    return this.taskService.findAll();
+  getAllTasks() {
+    return this.taskSvc.getAllTasks();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string): TaskDto | undefined {
-    return this.taskService.findOne(id);
+  @Get(":id")
+  public listTaskById(@Param("id") id: string) {
+    return this.taskSvc.getTaskById(parseInt(id));
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createTaskDto: CreateTaskDto): TaskDto {
-    return this.taskService.create(createTaskDto);
+  public insertTask(@Body() task: CreateTaskDto) {
+    console.error("insert", task);
+    return this.taskSvc.insertTask(task);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto): TaskDto | undefined {
-    return this.taskService.update(id, updateTaskDto);
-  }
-
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string): void {
-    this.taskService.remove(id);
+  @Put(":id")
+  public updateTask(@Param("id") id: string, @Body() task: any){
+    return this.taskSvc.updateTask(parseInt(id), task);
   }
 }
