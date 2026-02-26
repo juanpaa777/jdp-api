@@ -6,8 +6,9 @@ import { CreateTaskDto } from '../dto/task.dto';
 export class TaskController {
   constructor(public readonly taskSvc: TaskService) {}
 
+  // GET /api/task - Obtiene todas las tareas http://localhost:3000/api/task
   @Get()
-  getAllTasks() {
+  async getAllTasks(): Promise<any[]> {
     return this.taskSvc.getAllTasks();
   }
 
