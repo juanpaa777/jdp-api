@@ -18,34 +18,52 @@ export class TaskService {
     
   }
 
-  getTaskById(id: number): TaskDto | undefined {
-    return this.tasks.find(task => task.id === id);
+  async getTaskById(id: number): Promise<TaskDto | undefined> {
+    const query = 'SELECT * FROM tasks WHERE id = ?';
+    const [result] = await this.mysql.query(query, [id]);
+    return result[0] as TaskDto;
   }
 
-  insertTask(task: CreateTaskDto): TaskDto {
-    console.log('Insertando tarea:', task);
+  public async insertTask(task: CreateTaskDto): Promise<TaskDto> {
+    const sql = `INSERT INTO tasks (name, description, priority, user_id) VALUES 
+    ("${task.name}", "${task.description}", ${task.priority}, ${task.user_id})`;
+    const [result] = await this.mysql.query(sql);
+    const insertId = result.insertId;
+    const insertedTask = await this.getTaskById(insertId);
     
-    const newTask: TaskDto = {
-      id: this.nextId++,
-      name: task.name,
-      description: task.description,
-      priority: task.priority,
-      user_id: task.user_id
-    };
+    if (insertedTask === undefined) {
+      throw new Error('Error al recuperar la tarea insertada');
+    }
     
-    this.tasks.push(newTask);
-    return newTask;
+    return insertedTask;
+  }
+  public async updateTask(id: number, taskUpdated: UpdateTaskDto): Promise<TaskDto | undefined> {
+    const task = await this.getTaskById(id);
+
+    if (!task) {
+      return undefined;
+    }
+
+    task.name = taskUpdated.name ?? task.name;
+    task.description = taskUpdated.description ?? task.description;
+    task.priority = taskUpdated.priority ?? task.priority;
+
+    const query = `
+      UPDATE tasks
+      SET name = '${task.name}',
+          description = '${task.description}',
+          priority = ${task.priority}
+      WHERE id = ${id}
+    `;
+
+    await this.mysql.query(query);
+
+    return await this.getTaskById(id);
   }
 
-  updateTask(id: number, task: UpdateTaskDto): TaskDto | undefined {
-    const taskIndex = this.tasks.findIndex(t => t.id === id);
-    if (taskIndex === -1) return undefined;
-
-    this.tasks[taskIndex] = {
-      ...this.tasks[taskIndex],
-      ...task
-    };
-    
-    return this.tasks[taskIndex];
+  public async deleteTask(id: number): Promise<boolean> {
+    const query = `DELETE FROM tasks WHERE id = ${id}`;
+    const [result] = await this.mysql.query(query);
+    return result.affectedRows > 0;
   }
 }

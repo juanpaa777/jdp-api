@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, HttpException, ParseIntPipe } from '@nestjs/common';
 import { TaskService } from './task/task.service';
-import { CreateTaskDto } from './dto/task.dto';
+import { CreateTaskDto, TaskDto } from './dto/task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Controller('api/task')
 export class TaskController {
-  constructor(public readonly taskSvc: TaskService) {}
+  constructor(public readonly taskSvc: TaskService) { }
 
   @Get()
   getAllTasks() {
@@ -12,19 +13,36 @@ export class TaskController {
   }
 
   @Get(":id")
-  public listTaskById(@Param("id") id: string) {
-    return this.taskSvc.getTaskById(parseInt(id));
+  public async listTaskById(@Param("id") id: number): Promise<TaskDto> {
+    const result = await this.taskSvc.getTaskById(id);
+    if (result === undefined) {
+      throw new HttpException(`Tarea con id (${id}) no encontrada`, HttpStatus.NOT_FOUND);
+    }
+    
+    return result;
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  public insertTask(@Body() task: CreateTaskDto) {
-    console.error("insert", task);
-    return this.taskSvc.insertTask(task);
+  public async insertTask(@Body() task: CreateTaskDto): Promise<TaskDto> {
+    const result = await this.taskSvc.insertTask(task);
+    if (result === undefined) {
+      throw new HttpException(`Tarea no registrada`, HttpStatus.NOT_FOUND);
+    }
+    return result;
   }
 
   @Put(":id")
-  public updateTask(@Param("id") id: string, @Body() task: any){
-    return this.taskSvc.updateTask(parseInt(id), task);
+  public async updateTask(@Param("id", ParseIntPipe) id: number, @Body() task: UpdateTaskDto) {
+    return await this.taskSvc.updateTask(id, task);
+  }
+  
+  @Delete(":id")
+  public async deleteTask(@Param("id", ParseIntPipe) id: number) {
+    const result = await this.taskSvc.deleteTask(id);
+    if (!result) {
+      throw new HttpException("No se pudo eliminar la tarea", HttpStatus.NOT_FOUND);
+    }
+    return { message: "Tarea eliminada correctamente" };
   }
 }
