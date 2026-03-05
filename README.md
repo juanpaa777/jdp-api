@@ -31,6 +31,25 @@
 $ npm install
 ```
 
+## Prisma Database Setup
+
+```bash
+# Install Prisma CLI
+$ npm install prisma --save-dev
+
+# Generate Prisma Client
+$ npx prisma generate
+
+# Create database migrations (sincronizar schema con la base de datos)
+$ npx prisma db push
+
+# View database in Prisma Studio
+$ npx prisma studio
+
+# Reset database (eliminar todos los datos)
+$ npx prisma migrate reset
+```
+
 ## Compile and run the project
 
 ```bash

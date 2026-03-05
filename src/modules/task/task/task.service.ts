@@ -6,16 +6,14 @@ import { TaskDto, CreateTaskDto, UpdateTaskDto } from '../dto/task.dto';
 export class TaskService {
   private tasks: TaskDto[] = [];
   private nextId = 1;
+  prissma: any;
   
   constructor(@Inject('MYSQL_CONNECTION') private mysql: any) {
   }
 
   async getAllTasks(): Promise<TaskDto[]> {
-    const query = 'SELECT * FROM tasks';
-    const [rows] = await this.mysql.query(query);
-    console.log('Tareas obtenidas:', rows);
-    return rows;
-    
+    const task = await this.prissma.task.findMany();
+    return task;
   }
 
   async getTaskById(id: number): Promise<TaskDto | undefined> {
