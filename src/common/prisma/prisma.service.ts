@@ -1,12 +1,10 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy } from "@nestjs/common";
 import { PrismaClient } from '@prisma/client';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
+    // Llama al constructor padre. Prisma tomará la URL automáticamente de tu .env
     super(); 
   }
 
