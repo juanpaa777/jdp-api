@@ -16,8 +16,8 @@ export class UserService {
         id: true,
         name: true,
         username: true,
-        lastName: true,
-        createdAt: true
+        lastname: true,
+        created_at: true
       }
     });
   }
@@ -29,8 +29,8 @@ export class UserService {
         id: true,
         name: true,
         username: true,
-        lastName: true,
-        createdAt: true
+        lastname: true,
+        created_at: true
       }
     });
   }
@@ -49,7 +49,7 @@ export class UserService {
     return await this.prisma.user.create({
       data: {
         name: userData.name,
-        lastName: userData.lastName,
+        lastname: userData.lastName,
         username: userData.username,
         password: hashedPassword
       },
@@ -57,8 +57,8 @@ export class UserService {
         id: true,
         name: true,
         username: true,
-        lastName: true,
-        createdAt: true
+        lastname: true,
+        created_at: true
       }
     });
   }
@@ -67,7 +67,7 @@ export class UserService {
     const updateData: any = {};
     
     if (userData.name !== undefined) updateData.name = userData.name;
-    if (userData.lastName !== undefined) updateData.lastName = userData.lastName;
+    if (userData.lastName !== undefined) updateData.lastname = userData.lastName;
     if (userData.username !== undefined) updateData.username = userData.username;
     if (userData.password !== undefined) {
       updateData.password = await this.utilSvc.hashPassword(userData.password);
@@ -80,8 +80,8 @@ export class UserService {
         id: true,
         name: true,
         username: true,
-        lastName: true,
-        createdAt: true
+        lastname: true,
+        created_at: true
       }
     });
   }
@@ -93,8 +93,8 @@ export class UserService {
         id: true,
         name: true,
         username: true,
-        lastName: true,
-        createdAt: true
+        lastname: true,
+        created_at: true
       }
     });
   }

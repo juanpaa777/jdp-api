@@ -80,17 +80,11 @@ export class TaskController {
 
   public async deleteTask(@Param("id", ParseIntPipe) id: number) {
 
-    const result = await this.taskSvc.deleteTask(id);
-
-    if (result === undefined) {
-
-      throw new HttpException("No se pudo eliminar la tarea", HttpStatus.NOT_FOUND);
-
-    }
-
-    return result;
-
-  }
+   try {
+    await this.taskSvc.deleteTask(id);
+   } catch (error) {
+    throw new HttpException(`Tarea no encontrada`, HttpStatus.NOT_FOUND);
+   }
 
 }
-
+}

@@ -41,7 +41,7 @@ export class UpdateUserDto {
 export class UserDto {
   id: number;
   name: string;
-  lastName: string;
+  lastname: string;
   username: string;
-  createdAt: Date;
+  created_at: Date;
 }

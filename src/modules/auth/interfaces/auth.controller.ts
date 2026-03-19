@@ -1,22 +1,33 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from "@nestjs/common";
 import { AuthService } from "../auth.service";
+import { LoginDto } from "../dto/login.dto";
+import { RefreshTokenDto } from "../dto/refresh-token.dto";
+import { AuthGuard } from "./auth.guard";
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authSvc: AuthService) {}
+  constructor(private authService: AuthService) {}
 
-    @Get()
-    public index(): string {
-        return 'Auth module is working';
-    }
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
+  async login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
+  }
 
-    @Get('login')
-    public login(): string {
-        return this.authSvc.login();
-    }
+  @Post('refresh')
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refreshToken(refreshTokenDto);
+  }
 
-    @Get(':id')
-    public getById(@Param('id') id: string): string {
-        return `Obteniendo auth con ID: ${id}`;
-    }
+  @Post('logout')
+  async logout(@Body() body: { refreshToken: string }) {
+    await this.authService.logout(body.refreshToken);
+    return { message: 'Logout successful' };
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return this.authService.getProfile(req.user.sub);
+  }
 }

@@ -14,7 +14,7 @@ export class TaskService {
 
   async getTaskById(id: number): Promise<TaskDto | undefined> {
     const task = await this.prisma.task.findUnique({
-      where: { id }
+      where: { id: Number(id) }
     });
     return task || undefined;
   }

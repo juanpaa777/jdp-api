@@ -1,11 +1,18 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from "@nestjs/common";
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../generated/prisma/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
-    // Llama al constructor padre. Prisma tomará la URL automáticamente de tu .env
-    super(); 
+    const adapter = new PrismaMariaDb({
+      host: 'localhost',
+      port: 3306,
+      user: 'root',
+      password: '123456',
+      database: 'gds6081-e'
+    });
+    super({ adapter });
   }
 
   async onModuleInit() {
