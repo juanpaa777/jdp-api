@@ -6,6 +6,7 @@ import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { jwtConstants } from './constants';
+import { user } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -137,6 +138,7 @@ export class AuthService {
         throw new UnauthorizedException('Usuario no encontrado');
       }
 
+    
       // Generar nuevos tokens
       const tokens = await this.generateTokens(user);
 
@@ -172,8 +174,10 @@ export class AuthService {
 
   // Obtener información del usuario
   async getProfile(userId: number): Promise<any> {
+    console.log('getProfile called with userId:', userId); // Debug
+    
     const user = await this.prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: Number(userId) }, // Forzar tipo number
       select: {
         id: true,
         username: true,
@@ -187,6 +191,14 @@ export class AuthService {
       throw new UnauthorizedException('Usuario no encontrado');
     }
 
+    console.log('User found:', user); // Debug
     return user;
   }
+
+      public async getUserByUsername(username: string) {
+        return await this.prisma.user.findFirst({
+            where: { username }
+        });
+    }
+
 }
