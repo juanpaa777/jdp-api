@@ -201,4 +201,17 @@ export class AuthService {
         });
     }
 
+    public async getUserById(id: number): Promise<user|null> {
+        return await this.prisma.user.findUnique({
+            where: { id }
+        });
+    }
+    public async updateHash(user_Id: number, hash: string | null): Promise<user> {
+       return await this.prisma.user.update({
+            where: { id: user_Id },
+            data: { 
+                hash: hash 
+            }
+        });
+    }
 }
