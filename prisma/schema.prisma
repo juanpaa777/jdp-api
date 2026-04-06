@@ -14,6 +14,7 @@ model User {
   lastname   String   @db.VarChar(300)
   username   String   @db.VarChar(100)
   password   String   @db.LongText
+  hash       String?  @db.LongText
   created_at DateTime @default(now())
   task       Task[]
   refreshTokens RefreshToken[]

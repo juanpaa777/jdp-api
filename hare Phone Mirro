@@ -1,0 +1,53 @@
+[33mcommit 1e8c4047c8df25698e895eef21d0bb688f0da01c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Thu Mar 26 17:51:30 2026 -0600
+
+    Bug: correccion de inicio de sesion y configuracion de rutas (me,logouth,refresh)
+
+[33mcommit 0740eb012afe944c84df0598337b20ef439d39a7[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Mon Mar 23 17:42:58 2026 -0600
+
+    fix: inicio de secion completo y proteccion de rutas
+
+[33mcommit 3830e11eb39af2efdedf59b6e4eb558b30d96a6f[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Thu Mar 19 17:40:00 2026 -0600
+
+    correccion de errores
+
+[33mcommit 2aaf8da634a4d80c1a660c81b08f7719f4e13f5c[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Mon Mar 9 18:45:29 2026 -0500
+
+    fix: CRUD de usuario y creacion de rutas para la autentificacion
+
+[33mcommit 8b8f650f80747bfa63ef70831cdea437e68b7cb6[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Thu Mar 5 17:51:53 2026 -0600
+
+    uso de prisma y correccion del CRUD de tareas
+
+[33mcommit b8b4b37f978fbe7c6d5d7fbb7878299bee01d5f4[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Mon Mar 2 17:42:23 2026 -0600
+
+    Crud funcional con bases de datos y configuracion de swagger
+
+[33mcommit fd3a8d078ae546c1338df29d94a98a27b9164072[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Thu Feb 26 17:47:52 2026 -0600
+
+    COneccion a base de datos
+
+[33mcommit c1da0551fada3dc28c56146ed9af49aa73e6fa3e[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Thu Feb 19 17:07:48 2026 -0600
+
+    correccion de estructura de objetos
+
+[33mcommit 44ea31ace9f3b9d8d9108209a6cfbd2130c9cb39[m
+Author: juanpaa777 <juandiegopardozamrripa@gmail.com>
+Date:   Tue Feb 10 17:02:39 2026 -0600
+
+    orimer commit
