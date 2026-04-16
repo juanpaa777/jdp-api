@@ -4,64 +4,66 @@ import { LoginDto } from "../dto/login.dto";
 import { RefreshTokenDto } from "../dto/refresh-token.dto";
 import { AuthGuard } from "./auth.guard";
 import { UtilService } from "../../../common/services/util.service";
+import { JwtService } from "@nestjs/jwt";
+import { jwtConstants } from "../constants";
 
 
 @Controller('auth')
 export class AuthController {
 
-  constructor(private authService: AuthService, private utilSvc: UtilService) {}
+  constructor(private authService: AuthService, private utilSvc: UtilService, private jwtService: JwtService) {}
 
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
   public async login(@Body() loginDto: LoginDto): Promise<any> {
-    const { username, password } = loginDto;
-    
-    // Verify user and password
-    const user = await this.authService.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException('El usuario y/o contraseña es incorrecta');
-    }
-    
-    // Obtener la información del usuario (payload)
-    const { password: userPassword, username: userUsername, ...payload } = user;
-    
-    // Generar el JWT
-    const access_token = await this.utilSvc.generateJWT(payload);
-    
-    // Generar el refresh token
-    const refresh_token = await this.utilSvc.generateJWT(payload, '7d');
-    
-    // Devolver el JWT encriptado
-    return {
-      access_token,
-      refresh_token,
-      user: {
-        id: user.id,
-        username: user.username,
-        name: user.name,
-        lastname: user.lastname
-      }
-    };
+    // Usar el método login del AuthService que maneja todo correctamente
+    return await this.authService.login(loginDto);
   }
 
+ @Get("/me")
+ @UseGuards(AuthGuard)
+  public async getProfile(@Request() requesr: any){
+    const user = requesr['user'];
+    return user;
+  }
 
   @Post('refresh')
-  public async refreshToken(@Body() refreshTokenDto: RefreshTokenDto): Promise<any> {
-    return this.authService.refreshToken(refreshTokenDto);
+@UseGuards(AuthGuard)
+public async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Request() request: any): Promise<any> {
+  //obtener el usuario en sesion 
+  const sessionUser = request['user'];
+  
+  const user = await this.authService.getUserById(sessionUser.sub);
+  if (sessionUser.hash !== user?.hash) {
+    throw new UnauthorizedException('Token invalido');
   }
+  
+  //si el token es valido genera uno nuevo
+  return this.authService.refreshToken(refreshTokenDto);
+}
 
 
   @Post('logout')
-  public async logout(@Body() body: { refreshToken: string }): Promise<any> {
-    await this.authService.logout(body.refreshToken);
-    return { message: 'Logout successful' };
+  @HttpCode(HttpStatus.OK)
+  public async logout(@Body() body: { refreshToken: string }) {
+    try {
+      //obtener el usuario en sesion desde el refresh token
+      const payload = this.jwtService.verify(body.refreshToken, {
+        secret: jwtConstants.refreshSecret
+      });
+      
+      const userId = payload.sub || payload.id;
+      
+      //eliminar el refresh token y limpiar hash
+      await this.authService.updateHash(userId, null);
+      await this.authService.logout(body.refreshToken);
+      
+      return { message: 'Logout successful' };
+    } catch (error) {
+      throw new UnauthorizedException('Logout failed');
+    }
   }
 
 
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  public getProfile(@Request() req): Promise<any> {
-    return this.authService.getProfile(req.user.sub);
-  }
 }

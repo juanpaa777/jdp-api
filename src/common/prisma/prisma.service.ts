@@ -10,7 +10,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       port: 3306,
       user: 'root',
       password: '123456',
-      database: 'gds6081-e'
+      database: 'gds6081-e',
+      ssl: false,
+      connectionLimit: 10,
+      allowPublicKeyRetrieval: true
     });
     super({ adapter });
   }

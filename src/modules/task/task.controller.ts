@@ -1,15 +1,16 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, HttpException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, HttpException, ParseIntPipe, UseGuards } from '@nestjs/common';
 
 import { TaskService } from './task/task.service';
 
 import { CreateTaskDto, TaskDto } from './dto/task.dto';
 
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { AuthGuard } from '../auth/interfaces/auth.guard';
 
 
 
 @Controller('api/task')
-
+@UseGuards(AuthGuard)
 export class TaskController {
 
   constructor(public readonly taskSvc: TaskService) { }

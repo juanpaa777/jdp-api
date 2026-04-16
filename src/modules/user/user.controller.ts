@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, HttpException, UseGuards } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto';
 import { UserService } from './user.service';
+import { AuthGuard } from '../auth/interfaces/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('api/user')
 export class UserController {
   constructor(

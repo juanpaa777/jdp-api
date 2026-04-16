@@ -25,7 +25,8 @@ export class AuthService {
         username: true,
         name: true,
         lastname: true,
-        password: true
+        password: true,
+        hash: true
       }
     });
 
@@ -43,7 +44,8 @@ export class AuthService {
       sub: user.id, 
       username: user.username,
       name: user.name,
-      lastname: user.lastname
+      lastname: user.lastname,
+      hash: user.hash
     };
 
     // accessToken (60 segundos)
@@ -108,11 +110,17 @@ export class AuthService {
         secret: jwtConstants.refreshSecret
       });
 
+      // Extraer userId del payload (puede ser 'sub' o 'id')
+      const userId = payload.sub || payload.id;
+      if (!userId) {
+        throw new UnauthorizedException('Refresh token inválido: falta userId');
+      }
+
       // Verificar que el refresh token exista en la base de datos y no haya expirado
       const storedToken = await this.prisma.refreshToken.findFirst({
         where: {
           token: refreshToken,
-          userId: payload.sub,
+          userId: userId,
           expiresAt: {
             gt: new Date()
           }
@@ -125,7 +133,7 @@ export class AuthService {
 
       // Obtener información del usuario
       const user = await this.prisma.user.findUnique({
-        where: { id: payload.sub },
+        where: { id: userId },
         select: {
           id: true,
           username: true,
@@ -138,7 +146,6 @@ export class AuthService {
         throw new UnauthorizedException('Usuario no encontrado');
       }
 
-    
       // Generar nuevos tokens
       const tokens = await this.generateTokens(user);
 

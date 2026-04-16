@@ -18,6 +18,7 @@ model User {
   created_at DateTime @default(now())
   task       Task[]
   refreshTokens RefreshToken[]
+  logs Logs[]
 }
 
 model Task {
@@ -41,4 +42,16 @@ model RefreshToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
+}
+
+model Logs{
+  id Int @default(autoincrement()) @id
+  statusCode Int
+  timestamp DateTime
+  path String @db.MediumText()
+  error String @db.MediumText()
+  errorCode String @db.MediumText()
+  session_id Int
+  user User @relation(fields: [session_id], references: [id])
+  
 }
