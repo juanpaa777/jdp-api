@@ -6,5 +6,6 @@ export class AuthResponseDto {
         username: string;
         name: string;
         lastname: string;
+        role: string;
     };
 }

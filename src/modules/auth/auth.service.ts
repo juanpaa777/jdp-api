@@ -26,7 +26,8 @@ export class AuthService {
         name: true,
         lastname: true,
         password: true,
-        hash: true
+        hash: true,
+        role: true,
       }
     });
 
@@ -45,7 +46,8 @@ export class AuthService {
       username: user.username,
       name: user.name,
       lastname: user.lastname,
-      hash: user.hash
+      hash: user.hash,
+      role: user.role,
     };
 
     // accessToken (60 segundos)
@@ -95,7 +97,8 @@ export class AuthService {
         id: user.id,
         username: user.username,
         name: user.name,
-        lastname: user.lastname
+        lastname: user.lastname,
+        role: user.role,
       }
     };
   }
@@ -138,7 +141,8 @@ export class AuthService {
           id: true,
           username: true,
           name: true,
-          lastname: true
+          lastname: true,
+          role: true,
         }
       });
 
@@ -161,7 +165,8 @@ export class AuthService {
           id: user.id,
           username: user.username,
           name: user.name,
-          lastname: user.lastname
+          lastname: user.lastname,
+          role: user.role,
         }
       };
 
