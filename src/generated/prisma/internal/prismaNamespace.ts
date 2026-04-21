@@ -386,7 +386,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Task: 'Task',
-  RefreshToken: 'RefreshToken'
+  RefreshToken: 'RefreshToken',
+  Logs: 'Logs'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -402,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "task" | "refreshToken"
+    modelProps: "user" | "task" | "refreshToken" | "logs"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -604,6 +605,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Logs: {
+      payload: Prisma.$LogsPayload<ExtArgs>
+      fields: Prisma.LogsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LogsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LogsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload>
+        }
+        findFirst: {
+          args: Prisma.LogsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LogsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload>
+        }
+        findMany: {
+          args: Prisma.LogsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload>[]
+        }
+        create: {
+          args: Prisma.LogsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload>
+        }
+        createMany: {
+          args: Prisma.LogsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.LogsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload>
+        }
+        update: {
+          args: Prisma.LogsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload>
+        }
+        deleteMany: {
+          args: Prisma.LogsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LogsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.LogsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogsPayload>
+        }
+        aggregate: {
+          args: Prisma.LogsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLogs>
+        }
+        groupBy: {
+          args: Prisma.LogsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LogsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LogsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LogsCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -650,6 +717,7 @@ export const UserScalarFieldEnum = {
   username: 'username',
   password: 'password',
   hash: 'hash',
+  role: 'role',
   created_at: 'created_at'
 } as const
 
@@ -677,6 +745,19 @@ export const RefreshTokenScalarFieldEnum = {
 } as const
 
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
+
+
+export const LogsScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  severity: 'severity',
+  timestamp: 'timestamp',
+  userId: 'userId',
+  username: 'username',
+  details: 'details'
+} as const
+
+export type LogsScalarFieldEnum = (typeof LogsScalarFieldEnum)[keyof typeof LogsScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -721,6 +802,14 @@ export const RefreshTokenOrderByRelevanceFieldEnum = {
 export type RefreshTokenOrderByRelevanceFieldEnum = (typeof RefreshTokenOrderByRelevanceFieldEnum)[keyof typeof RefreshTokenOrderByRelevanceFieldEnum]
 
 
+export const LogsOrderByRelevanceFieldEnum = {
+  username: 'username',
+  details: 'details'
+} as const
+
+export type LogsOrderByRelevanceFieldEnum = (typeof LogsOrderByRelevanceFieldEnum)[keyof typeof LogsOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -742,6 +831,13 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
 
 
 /**
+ * Reference to a field of type 'Role'
+ */
+export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -752,6 +848,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'LogAction'
+ */
+export type EnumLogActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LogAction'>
+    
+
+
+/**
+ * Reference to a field of type 'LogSeverity'
+ */
+export type EnumLogSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LogSeverity'>
     
 
 
@@ -859,6 +969,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   task?: Prisma.TaskOmit
   refreshToken?: Prisma.RefreshTokenOmit
+  logs?: Prisma.LogsOmit
 }
 
 /* Types for Logging */

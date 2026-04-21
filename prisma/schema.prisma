@@ -8,17 +8,43 @@ datasource db {
   provider = "mysql"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum LogSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+enum LogAction {
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  LOGOUT
+  USER_CREATED
+  USER_UPDATED
+  USER_DELETED
+  TASK_CREATED
+  TASK_UPDATED
+  TASK_DELETED
+  ROLE_CHANGED
+}
+
 model User {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(200)
-  lastname   String   @db.VarChar(300)
-  username   String   @db.VarChar(100)
-  password   String   @db.LongText
-  hash       String?  @db.LongText
-  created_at DateTime @default(now())
-  task       Task[]
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(200)
+  lastname      String         @db.VarChar(300)
+  username      String         @unique @db.VarChar(100)
+  password      String         @db.LongText
+  hash          String?        @db.LongText
+  role          Role           @default(USER)
+  created_at    DateTime       @default(now())
+  task          Task[]
   refreshTokens RefreshToken[]
-  logs Logs[]
+  logs          Logs[]
 }
 
 model Task {
@@ -44,14 +70,13 @@ model RefreshToken {
   @@unique([token])
 }
 
-model Logs{
-  id Int @default(autoincrement()) @id
-  statusCode Int
-  timestamp DateTime
-  path String @db.MediumText()
-  error String @db.MediumText()
-  errorCode String @db.MediumText()
-  session_id Int
-  user User @relation(fields: [session_id], references: [id])
-  
+model Logs {
+  id        Int         @id @default(autoincrement())
+  action    LogAction
+  severity  LogSeverity
+  timestamp DateTime    @default(now())
+  userId    Int?
+  username  String?     @db.VarChar(100)
+  details   String?     @db.MediumText
+  user      User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 }

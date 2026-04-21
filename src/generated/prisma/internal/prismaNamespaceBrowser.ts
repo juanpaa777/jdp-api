@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Task: 'Task',
-  RefreshToken: 'RefreshToken'
+  RefreshToken: 'RefreshToken',
+  Logs: 'Logs'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -79,6 +80,7 @@ export const UserScalarFieldEnum = {
   username: 'username',
   password: 'password',
   hash: 'hash',
+  role: 'role',
   created_at: 'created_at'
 } as const
 
@@ -106,6 +108,19 @@ export const RefreshTokenScalarFieldEnum = {
 } as const
 
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
+
+
+export const LogsScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  severity: 'severity',
+  timestamp: 'timestamp',
+  userId: 'userId',
+  username: 'username',
+  details: 'details'
+} as const
+
+export type LogsScalarFieldEnum = (typeof LogsScalarFieldEnum)[keyof typeof LogsScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -148,4 +163,12 @@ export const RefreshTokenOrderByRelevanceFieldEnum = {
 } as const
 
 export type RefreshTokenOrderByRelevanceFieldEnum = (typeof RefreshTokenOrderByRelevanceFieldEnum)[keyof typeof RefreshTokenOrderByRelevanceFieldEnum]
+
+
+export const LogsOrderByRelevanceFieldEnum = {
+  username: 'username',
+  details: 'details'
+} as const
+
+export type LogsOrderByRelevanceFieldEnum = (typeof LogsOrderByRelevanceFieldEnum)[keyof typeof LogsOrderByRelevanceFieldEnum]
 
