@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, HttpException, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { TaskNotFoundException } from '../../common/exceptions';
 
 import { TaskService } from './task/task.service';
 
@@ -34,9 +35,7 @@ export class TaskController {
     const result = await this.taskSvc.getTaskById(id);
 
     if (result === undefined) {
-
-      throw new HttpException(`Tarea con id (${id}) no encontrada`, HttpStatus.NOT_FOUND);
-
+      throw new TaskNotFoundException(Number(id));
     }
 
     
@@ -56,9 +55,7 @@ export class TaskController {
     const result = await this.taskSvc.insertTask(task);
 
     if (result === undefined) {
-
-      throw new HttpException(`Tarea no registrada`, HttpStatus.NOT_FOUND);
-
+      throw new TaskNotFoundException(0);
     }
 
     return result;
@@ -84,7 +81,7 @@ export class TaskController {
    try {
     await this.taskSvc.deleteTask(id);
    } catch (error) {
-    throw new HttpException(`Tarea no encontrada`, HttpStatus.NOT_FOUND);
+    throw new TaskNotFoundException(id);
    }
 
 }

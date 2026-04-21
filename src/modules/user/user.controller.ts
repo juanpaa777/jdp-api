@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, HttpException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto';
 import { UserService } from './user.service';
 import { AuthGuard } from '../auth/interfaces/auth.guard';
+import { UserNotFoundException } from '../../common/exceptions';
 
 @UseGuards(AuthGuard)
 @Controller('api/user')
@@ -20,7 +21,7 @@ export class UserController {
   async getUserById(@Param('id') id: number) {
     const user = await this.userSvc.getUserById(id);
     if (!user) {
-      throw new HttpException(`Usuario con id (${id}) no encontrado`, HttpStatus.NOT_FOUND);
+      throw new UserNotFoundException(Number(id));
     }
     return user;
   }
@@ -33,19 +34,12 @@ export class UserController {
 
   @Put(':id')
   async updateUser(@Param('id') id: number, @Body() userData: UpdateUserDto) {
-    const user = await this.userSvc.updateUser(id, userData);
-    if (!user) {
-      throw new HttpException(`Usuario con id (${id}) no encontrado`, HttpStatus.NOT_FOUND);
-    }
-    return user;
+    return await this.userSvc.updateUser(id, userData);
   }
 
   @Delete(':id')
   async deleteUser(@Param('id') id: number) {
-    const user = await this.userSvc.deleteUser(id);
-    if (!user) {
-      throw new HttpException(`Usuario con id (${id}) no encontrado`, HttpStatus.NOT_FOUND);
-    }
+    await this.userSvc.deleteUser(id);
     return { message: 'Usuario eliminado correctamente' };
   }
 }

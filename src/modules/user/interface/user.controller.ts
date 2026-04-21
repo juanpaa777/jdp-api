@@ -51,10 +51,13 @@ export class UserController{
     public async deleteUser(@Param("id",ParseIntPipe) id:number): Promise<Boolean>{
         try{
             await this.userSvc.deleteUser(id);
-
-        }catch(error){
-            throw new HttpException("user not found",HttpStatus.NOT_FOUND);
-
+        } catch(error: any){
+            // Prisma error P2025 = record not found
+            if (error.code === 'P2025') {
+                throw new HttpException("user not found", HttpStatus.NOT_FOUND);
+            }
+            // Dejar pasar otros errores (como UserHasTasksException)
+            throw error;
         }
         return true;
     }

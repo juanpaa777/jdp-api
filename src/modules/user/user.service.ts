@@ -1,7 +1,14 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto';
 import { UtilService } from '../../common/services/util.service';
+import {
+  DuplicateUsernameException,
+  UserNotFoundException,
+  UserUpdateFailedException,
+  UserDeleteFailedException,
+  UserHasTasksException,
+} from '../../common/exceptions';
 
 @Injectable()
 export class UserService {
@@ -41,7 +48,7 @@ export class UserService {
     });
 
     if (existingUser) {
-      throw new ConflictException('El nombre de usuario ya está en uso');
+      throw new DuplicateUsernameException(userData.username);
     }
 
     const hashedPassword = await this.utilSvc.hashPassword(userData.password);
@@ -87,15 +94,23 @@ export class UserService {
   }
 
   async deleteUser(id: number): Promise<UserDto | null> {
-    return await this.prisma.user.delete({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        lastname: true,
-        created_at: true
+    try {
+      return await this.prisma.user.delete({
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          lastname: true,
+          created_at: true
+        }
+      });
+    } catch (error: any) {
+      // Prisma error code P2003 = Foreign key constraint failed
+      if (error.code === 'P2003') {
+        throw new UserHasTasksException(id);
       }
-    });
+      throw error;
+    }
   }
 }

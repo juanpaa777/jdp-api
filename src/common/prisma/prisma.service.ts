@@ -12,8 +12,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       password: '123456',
       database: 'gds6081-e',
       ssl: false,
-      connectionLimit: 10,
-      allowPublicKeyRetrieval: true
+      connectionLimit: 10
     });
     super({ adapter });
   }
