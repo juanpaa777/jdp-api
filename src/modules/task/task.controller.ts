@@ -41,7 +41,7 @@ export class TaskController {
   @HttpCode(HttpStatus.CREATED)
 
   public async insertTask(@Body() task: CreateTaskDto, @CurrentUser() currentUser: any): Promise<TaskDto> {
-    const result = await this.taskSvc.insertTask(task, currentUser.sub);
+    const result = await this.taskSvc.insertTask(task, currentUser.sub, currentUser.username);
     if (result === undefined) {
       throw new TaskNotFoundException(0);
     }
@@ -53,7 +53,7 @@ export class TaskController {
   @Put(":id")
 
   public async updateTask(@Param("id", ParseIntPipe) id: number, @Body() task: UpdateTaskDto, @CurrentUser() currentUser: any) {
-    return await this.taskSvc.updateTask(id, task, currentUser.sub, currentUser.role === 'ADMIN');
+    return await this.taskSvc.updateTask(id, task, currentUser.sub, currentUser.role === 'ADMIN', currentUser.username);
   }
 
   
@@ -61,6 +61,6 @@ export class TaskController {
   @Delete(":id")
 
   public async deleteTask(@Param("id", ParseIntPipe) id: number, @CurrentUser() currentUser: any) {
-    await this.taskSvc.deleteTask(id, currentUser.sub, currentUser.role === 'ADMIN');
+    await this.taskSvc.deleteTask(id, currentUser.sub, currentUser.role === 'ADMIN', currentUser.username);
   }
 }

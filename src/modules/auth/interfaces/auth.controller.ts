@@ -29,19 +29,9 @@ export class AuthController {
   }
 
   @Post('refresh')
-@UseGuards(AuthGuard)
-public async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Request() request: any): Promise<any> {
-  //obtener el usuario en sesion 
-  const sessionUser = request['user'];
-  
-  const user = await this.authService.getUserById(sessionUser.sub);
-  if (sessionUser.hash !== user?.hash) {
-    throw new UnauthorizedException('Token invalido');
+  public async refreshToken(@Body() refreshTokenDto: RefreshTokenDto): Promise<any> {
+    return this.authService.refreshToken(refreshTokenDto);
   }
-  
-  //si el token es valido genera uno nuevo
-  return this.authService.refreshToken(refreshTokenDto);
-}
 
 
   @Post('logout')
@@ -57,7 +47,7 @@ public async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Request() r
       
       //eliminar el refresh token y limpiar hash
       await this.authService.updateHash(userId, null);
-      await this.authService.logout(body.refreshToken);
+      await this.authService.logout(body.refreshToken, userId, payload.username);
       
       return { message: 'Logout successful' };
     } catch (error) {

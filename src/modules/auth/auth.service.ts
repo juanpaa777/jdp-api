@@ -7,13 +7,16 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { jwtConstants } from './constants';
 import { user } from '../user/entities/user.entity';
+import { AuditService } from '../audit/audit.service';
+import { LogAction, LogSeverity } from '../../generated/prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private auditService: AuditService,
   ) {}
 
   // Verificar el usuario y contraseña
@@ -84,8 +87,21 @@ export class AuthService {
     // Verificar el usuario y contraseña
     const user = await this.validateUser(username, password);
     if (!user) {
+      await this.auditService.log({
+        action: LogAction.LOGIN_FAILED,
+        severity: LogSeverity.WARNING,
+        username,
+        details: `Intento de login fallido para: ${username}`,
+      });
       throw new UnauthorizedException('Credenciales inválidas');
     }
+    await this.auditService.log({
+      action: LogAction.LOGIN_SUCCESS,
+      severity: LogSeverity.INFO,
+      userId: user.id,
+      username: user.username,
+      details: `Login exitoso`,
+    });
 
     // Generar el token JWT
     const tokens = await this.generateTokens(user);
@@ -176,11 +192,18 @@ export class AuthService {
   }
 
   // Logout
-  async logout(refreshToken: string): Promise<void> {
+  async logout(refreshToken: string, userId?: number, username?: string): Promise<void> {
     await this.prisma.refreshToken.deleteMany({
       where: {
         token: refreshToken
       }
+    });
+    await this.auditService.log({
+      action: LogAction.LOGOUT,
+      severity: LogSeverity.INFO,
+      userId,
+      username,
+      details: `Cierre de sesión`,
     });
   }
 

@@ -6,6 +6,7 @@ import { jwtConstants } from '../constants';
 import { AuthGuard } from './auth.guard';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { UtilService } from '../../../common/services/util.service';
+import { AuditModule } from '../../audit/audit.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UtilService } from '../../../common/services/util.service';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
     }),
+    AuditModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard, PrismaService, UtilService],

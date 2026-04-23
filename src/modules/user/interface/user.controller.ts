@@ -8,12 +8,18 @@ import { AuthGuard } from "../../auth/interfaces/auth.guard";
 import { RolesGuard } from "../../../common/guards/roles.guard";
 import { Roles } from "../../../common/decorators/roles.decorator";
 import { CurrentUser } from "../../../common/decorators/current-user.decorator";
+import { AuditService } from "../../audit/audit.service";
+import { LogAction, LogSeverity } from "../../../generated/prisma/client";
 
 @UseGuards(AuthGuard)
 @Controller('api/user')
 export class UserController{
 
-    constructor(private userSvc: UserService, private readonly utilService: UtilService){}
+    constructor(
+        private userSvc: UserService,
+        private readonly utilService: UtilService,
+        private readonly auditService: AuditService,
+    ){}
 
     @Get()
     @UseGuards(RolesGuard)
@@ -41,16 +47,21 @@ export class UserController{
     @Post()
     @UseGuards(RolesGuard)
     @Roles('ADMIN')
-    public async insertUser(@Body() user: CreateUserDto): Promise<user>{
+    public async insertUser(@Body() user: CreateUserDto, @CurrentUser() currentUser: any): Promise<user>{
         const encryptedPassword=await this.utilService.hashPassword(user.password);
         user.password=encryptedPassword;
 
         const result= await this.userSvc.insertUser(user);
         if (result==undefined)
             throw new HttpException(`Usuario No Registrado`,HttpStatus.INTERNAL_SERVER_ERROR)
+        await this.auditService.log({
+            action: LogAction.USER_CREATED,
+            severity: LogSeverity.INFO,
+            userId: currentUser.sub,
+            username: currentUser.username,
+            details: `Usuario creado: ${user.username}`,
+        });
         return result;
-        
-
     }
 
     @Put(":id")
@@ -62,7 +73,15 @@ export class UserController{
         if (currentUser.sub !== Number(id) && currentUser.role !== 'ADMIN') {
             throw new ForbiddenException('No puedes modificar el perfil de otro usuario');
         }
-        return await this.userSvc.updateUser(id,user);
+        const result = await this.userSvc.updateUser(id,user);
+        await this.auditService.log({
+            action: LogAction.USER_UPDATED,
+            severity: LogSeverity.INFO,
+            userId: currentUser.sub,
+            username: currentUser.username,
+            details: `Usuario actualizado: id ${id}`,
+        });
+        return result;
     }
 
     @Delete(":id")
@@ -81,6 +100,13 @@ export class UserController{
             }
             throw error;
         }
+        await this.auditService.log({
+            action: LogAction.USER_DELETED,
+            severity: LogSeverity.WARNING,
+            userId: currentUser.sub,
+            username: currentUser.username,
+            details: `Usuario eliminado: id ${id}`,
+        });
         return true;
     }
 

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
 export class CreateUserDto{
     @IsString()
@@ -21,7 +21,10 @@ export class CreateUserDto{
     
     @IsString()
     @IsNotEmpty()
-    @MinLength(3)
+    @MinLength(8)
     @MaxLength(100)
+    @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/, {
+        message: 'La contraseña debe tener al menos una mayúscula, un número y un carácter especial',
+    })
     password: string; 
 }
