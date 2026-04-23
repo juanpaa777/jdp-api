@@ -1,12 +1,10 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { TaskNotFoundException } from '../../common/exceptions';
-
 import { TaskService } from './task/task.service';
-
 import { CreateTaskDto, TaskDto } from './dto/task.dto';
-
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { AuthGuard } from '../auth/interfaces/auth.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 
 
@@ -20,28 +18,20 @@ export class TaskController {
 
   @Get()
 
-  getAllTasks() {
-
-    return this.taskSvc.getAllTasks();
-
+  getAllTasks(@CurrentUser() currentUser: any) {
+    return this.taskSvc.getAllTasks(currentUser.sub, currentUser.role === 'ADMIN');
   }
 
 
 
   @Get(":id")
 
-  public async listTaskById(@Param("id") id: number): Promise<TaskDto> {
-
-    const result = await this.taskSvc.getTaskById(id);
-
+  public async listTaskById(@Param("id", ParseIntPipe) id: number, @CurrentUser() currentUser: any): Promise<TaskDto> {
+    const result = await this.taskSvc.getTaskById(id, currentUser.sub, currentUser.role === 'ADMIN');
     if (result === undefined) {
       throw new TaskNotFoundException(Number(id));
     }
-
-    
-
     return result;
-
   }
 
 
@@ -50,39 +40,27 @@ export class TaskController {
 
   @HttpCode(HttpStatus.CREATED)
 
-  public async insertTask(@Body() task: CreateTaskDto): Promise<TaskDto> {
-
-    const result = await this.taskSvc.insertTask(task);
-
+  public async insertTask(@Body() task: CreateTaskDto, @CurrentUser() currentUser: any): Promise<TaskDto> {
+    const result = await this.taskSvc.insertTask(task, currentUser.sub);
     if (result === undefined) {
       throw new TaskNotFoundException(0);
     }
-
     return result;
-
   }
 
 
 
   @Put(":id")
 
-  public async updateTask(@Param("id", ParseIntPipe) id: number, @Body() task: UpdateTaskDto) {
-
-    return await this.taskSvc.updateTask(id, task);
-
+  public async updateTask(@Param("id", ParseIntPipe) id: number, @Body() task: UpdateTaskDto, @CurrentUser() currentUser: any) {
+    return await this.taskSvc.updateTask(id, task, currentUser.sub, currentUser.role === 'ADMIN');
   }
 
   
 
   @Delete(":id")
 
-  public async deleteTask(@Param("id", ParseIntPipe) id: number) {
-
-   try {
-    await this.taskSvc.deleteTask(id);
-   } catch (error) {
-    throw new TaskNotFoundException(id);
-   }
-
-}
+  public async deleteTask(@Param("id", ParseIntPipe) id: number, @CurrentUser() currentUser: any) {
+    await this.taskSvc.deleteTask(id, currentUser.sub, currentUser.role === 'ADMIN');
+  }
 }

@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsString, MaxLength, MinLength, IsNumber } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, IsNumber } from "class-validator";
 
 export class TaskDto {
   id?: number;
@@ -25,9 +25,9 @@ export class CreateTaskDto {
     @IsNotEmpty()
     priority: boolean;
 
+    @IsOptional()
     @IsNumber()
-    @IsNotEmpty()
-    user_id: number;
+    user_id?: number;
 }
 
 export class UpdateTaskDto {
